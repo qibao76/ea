@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- EmpMapper 是  User的访问接口 -->
+<mapper namespace="dao.NoteDao">
+
+		<select id="findByNoteBookId" resultType="map">
+			select cn_note_id as "id",
+					cn_note_title as name
+			from cn_note
+			where cn_notebook_id=#{notebookId}
+			and cn_note_status_id ="1"
+			order by
+			 cn_note_last_modify_time desc
+		</select>
+		<!-- 通过笔记本id查找笔记本 -->
+		<select id="findNoteById" resultType="entity.Note">
+			select cn_note_id as id,
+				   cn_notebook_id as notebookId,
+				   cn_user_id as user_id,
+				   cn_note_status_id as statusId,
+				   cn_note_type_id as type,
+				   cn_note_title as title,
+				   cn_note_body as body,
+				   cn_note_create_time as createTime,
+				   cn_note_last_modify_time as modifyTime
+			from cn_note
+			where cn_note_id=#{noteId} 
+		</select>
+		
+		<update id="updataNote" parameterType="map" >
+			update
+			  cn_note
+			set
+			<trim suffixOverrides=",">
+			  <if test="notebookId!=null">
+			  	cn_notebook_id=#{notebookId},
+			  </if>
+			  <if test="title!=null">
+			  	cn_note_title=#{title},
+			  </if>
+			  <if test="body!=null">
+			  	cn_note_body=#{body},
+			  </if>
+			  <if test="userId!=null">
+			  	cn_user_id=#{userId},
+			  </if>
+			  <if test="statusId!=null">
+			  	cn_note_status_id=#{statusId},
+			  </if>
+			  <if test="typeId!=null">
+			  	cn_note_type_id=#{typeId},
+			  </if>
+			  <if test="lastModifyTime!=null">
+			  	cn_note_last_modify_time=#{lastModifyTime},
+			  </if>
+			</trim>  
+			where
+			  cn_note_id=#{id}
+		</update>
+		
+		<insert id="addNote" parameterType="entity.Note">
+			insert into cn_note values(
+				#{id},
+				#{notebookId},
+				#{user_id},
+				#{statusId},
+				#{type},
+				#{title},
+				#{body},
+				#{createTime},
+				#{modifyTime}
+			)
+		
+		</insert>
+		
+		<delete id="deleteNoteById" parameterType="string">
+			delete from cn_note where cn_note_id=#{id}
+		</delete>
+		
+		
+	
+	
+		<select id="findNotesByParam" parameterType="map" resultType="map">
+			select 
+				cn_note_id as id,
+				cn_note_title as title,
+				cn_note_body as body
+			from
+				cn_note
+			where 
+				<choose>
+					<when test="key!=null">
+						cn_note_title like #{key}
+						and cn_note_body like#{key}
+					</when>
+					<when test="title!=null">
+						cn_note_title like #{title}
+					</when>
+					<when test="body!=null">
+						cn_note_body like #{body}
+					</when>
+				</choose>
+			order by
+				cn_note_last_modify_time desc			
+		
+		</select>
+		<delete id="deleteNotessByParam" parameterType="map">
+			delete from cn_note
+			where cn_note_id in
+				<foreach collection="idList" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+		
+		</delete>
+		<!-- deleteNotes(List<String) list)  遍历删除 -->
+		<delete id="deleteNotessByList" parameterType="list">
+		delete from 
+		     cn_note
+		where  
+		   cn_note_id
+		in
+		<foreach collection="list" open="(" separator ="," close=")" item="id">
+			#{id}
+		</foreach>
+		</delete>
+		
+		
+</mapper>
+	
+	
+
+	
+	

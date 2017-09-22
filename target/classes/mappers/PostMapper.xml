@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- EmpMapper 是 User的访问接口 -->
+<mapper namespace="dao.PostDao">
+
+	<resultMap type="entity.Post" id="postMap">
+		<id property="id" column="id" />
+		<result property="time" column="time" />
+		<result property="content" column="content" />
+		<association property="personId" javaType="entity.Person">
+			<id property="id" column="personId"/>
+			<result property="name" column="name"/>
+		</association>
+		<!-- 映射集合 -->
+		<collection property="list"
+		 select="findCommentsByPostId" column="id">
+		</collection>
+	</resultMap>
+	<select id="findPostById" resultMap="postMap">
+		select
+			post_id as id,
+			post_content as content,
+			post_time as time,
+			po.person_id as personId,
+			
+			pe.person_name as name,
+			pe.person_age as age
+		from
+			post po left join person pe
+			on po.person_id=pe.person_id
+		where
+			post_id=#{id}
+	</select>
+	<select id="findCommentsByPostId" resultType="entity.Comment">
+		select 
+			comment_id as id,
+			comment_content as content
+		from 
+			comment
+		where 
+			post_id=#{postId}
+	</select>
+</mapper>
+	
+	
+
+	
+	

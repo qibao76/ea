@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- EmpMapper 是  User的访问接口 -->
+<mapper namespace="dao.NotebookDao">
+
+		<select id="findNotebooksByUserId" resultType="map">
+			select cn_notebook_id as "id",
+					cn_notebook_name as name
+			from cn_notebook
+			where cn_user_id=#{userId}
+		</select>
+		<select id="findNotebooksBynoteBookId" resultType="entity.NoteBook">
+			select cn_notebook_id as "id",
+					cn_notebook_name as name,
+					cn_user_id as userId,
+					cn_notebook_type_id as type,
+					cn_notebook_desc as "desc",
+					cn_notebook_createtime as createTime
+			from cn_notebook
+			where cn_notebook_id=#{bookId}
+		</select>
+		<insert id="addNoteBook" parameterType="entity.NoteBook">
+			insert into cn_notebook
+			values(
+				#{id},
+				#{userId},
+				#{type},
+				#{name},
+				#{desc},
+				#{createTime}
+			);
+		</insert>
+		<delete id="deleteNotebookByid" parameterType="string">
+			delete from cn_notebook where cn_notebook_id=#{id}
+		</delete>
+		
+		<select id="findNotebooksByParam" parameterType="map"
+		resultType="map">
+			select 
+				cn_notebook_id as id,
+				cn_notebook_name as name
+			from
+				${tableName}
+			where 
+				cn_user_id=#{userId}
+			<if test="start!=null">
+			limit
+				#{start},#{rows}
+			</if>
+		</select>
+		
+		
+</mapper>
+	
+	
+
+	
+	
